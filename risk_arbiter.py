@@ -101,12 +101,12 @@ def arbitrate(context):
         '{"decision": "approve|soft_challenge|block", "reasoning": "one sentence"}'
     )
     try:
-        response = _CLIENT.messages.create(
+        response = _CLIENT.chat.completions.create(
             model=MODEL,
             max_tokens=200,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = response.content[0].text.strip()
+        text = response.choices[0].message.content.strip()
         text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
         parsed = json.loads(text)
         if parsed.get("decision") not in {"approve", "soft_challenge", "block"}:
