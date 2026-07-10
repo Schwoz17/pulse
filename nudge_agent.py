@@ -17,14 +17,16 @@ import os
 import json
 
 try:
-    import anthropic
-    _CLIENT = anthropic.Anthropic() if os.environ.get("ANTHROPIC_API_KEY") else None
+    from openai import OpenAI
+    _CLIENT = (
+        OpenAI(api_key=os.environ.get("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
+        if os.environ.get("GROQ_API_KEY") else None
+    )
 except ImportError:
     _CLIENT = None
 
-MODEL = "claude-haiku-4-5-20251001"  # fast and cheap -- nudges are short, frequent,
-                                      # low-stakes; no reason to route through a bigger model
-
+MODEL = "openai/gpt-oss-20b"  # fast and cheap -- nudges are short, frequent,
+                               # low-stakes; no reason to route through a bigger model
 
 def _fallback_nudge(profile):
     if profile["shortfall_amount"] > 0:
@@ -51,12 +53,12 @@ def generate_nudge(profile):
         "Write the notification now, nothing else."
     )
     try:
-        response = _CLIENT.messages.create(
+        response = _CLIENT.chat.completions.create(
             model=MODEL,
             max_tokens=120,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = response.content[0].text.strip()
+        text = response.choices[0].message.content.strip()
         return {"text": text, "source": "llm"}
     except Exception as e:
         return {"text": _fallback_nudge(profile), "source": f"fallback_template (error: {type(e).__name__})"}
