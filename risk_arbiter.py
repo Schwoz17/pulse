@@ -32,12 +32,15 @@ import numpy as np
 import pandas as pd
 
 try:
-    import anthropic
-    _CLIENT = anthropic.Anthropic() if os.environ.get("ANTHROPIC_API_KEY") else None
+    from openai import OpenAI
+    _CLIENT = (
+        OpenAI(api_key=os.environ.get("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
+        if os.environ.get("GROQ_API_KEY") else None
+    )
 except ImportError:
     _CLIENT = None
 
-MODEL = "claude-sonnet-5"
+MODEL = "openai/gpt-oss-120b"
 LOW, HIGH = 0.4, 0.7  # the borderline band this module exists to handle
 DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
