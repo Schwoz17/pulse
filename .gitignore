@@ -1,0 +1,15 @@
+cat > .gitignore << 'EOF'
+__pycache__/
+*.pyc
+venv/
+.env
+api.log
+raw_sessions.json
+features.csv
+daily_balances.json
+balance_checks.json
+finance_baselines.json
+risk_scores.csv
+nudges.json
+arbitration_results.json
+EOF
